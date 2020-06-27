@@ -1,10 +1,11 @@
+#Author: Kanit Mann
+
 import cv2
 import numpy as np
 
 cap = cv2.VideoCapture(0)
 kernel = np.ones((5,5),np.uint8)
 
-error = 20
 while True:
     success, img = cap.read()
     #getting dimensions and channel for the screen
@@ -47,9 +48,10 @@ while True:
         cy = x+h//2
         #center of img
         Cy = x1//2
-        if Cy>cy+5:
+        error = y1/100*2
+        if Cy>cy+error:
             print("left")
-        elif Cy<cy+5:
+        elif Cy<cy-error:
             print("right")
         else:
             print("move")
