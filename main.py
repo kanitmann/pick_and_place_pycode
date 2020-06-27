@@ -23,12 +23,10 @@ while True:
 
     ret, thresh = cv2.threshold(mask, 127, 255, 0)
     contours, hierarchy = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-    # find contours in the thresholded image
-
     # loop over the contours
 
     if len(contours) != 0:
-        # draw in blue the contours that were founded
+        # draw in blue the contours that were found
         cv2.drawContours(img, contours, -1, 255, 3)
 
         # find the biggest area
@@ -37,13 +35,11 @@ while True:
         x, y, w, h = cv2.boundingRect(c)
         # draw the book contour (in green)
         cv2.rectangle(img, (x, y), (x + w, y + h), (0, 255, 0), 2)
-        # compute the center of the contour
-        M = cv2.moments(c)
-        cX = int(M["m10"] / M["m00"])
-        cY = int(M["m01"] / M["m00"])
+        #Center:  cv2.rectangle(img,(325,225),(325,225),(0,0,255),2)
+
         # draw the contour and center of the shape on the image
-        cv2.circle(img, (cX, cY), 7, (255, 255, 255), -1)
-        cv2.putText(img, "center", (cX - 20, cY - 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
+        cv2.circle(img, (x+h//2, y+w//2), 7, (255, 255, 255), -1)
+        cv2.putText(img, "center", (x+h//2-20, y+w//2 - 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
 
     #cv2.drawContours(img ,contours,-1,(0,0,255),3)
 
