@@ -4,8 +4,11 @@ import numpy as np
 cap = cv2.VideoCapture(0)
 kernel = np.ones((5,5),np.uint8)
 
+error = 20
 while True:
     success, img = cap.read()
+    #getting dimensions and channel for the screen
+    x1, y1, z = img.shape
     #img = np.flip(img, axis=1)
     blur = cv2.GaussianBlur(img, (5, 5), 0)
     hsv = cv2.cvtColor(blur,cv2.COLOR_BGR2HSV)
@@ -40,7 +43,16 @@ while True:
         # draw the contour and center of the shape on the image
         cv2.circle(img, (x+h//2, y+w//2), 7, (255, 255, 255), -1)
         cv2.putText(img, "center", (x+h//2-20, y+w//2 - 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
-
+        #center of contoured area
+        cy = x+h//2
+        #center of img
+        Cy = x1//2
+        if Cy>cy+5:
+            print("left")
+        elif Cy<cy+5:
+            print("right")
+        else:
+            print("move")
     #cv2.drawContours(img ,contours,-1,(0,0,255),3)
 
     cv2.imshow("output",img)
