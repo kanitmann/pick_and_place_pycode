@@ -2,6 +2,17 @@
 
 import cv2
 import numpy as np
+import serial
+
+def pick():
+    print("pick")
+
+ser = serial.Serial('COM4', 9600)  # Establish the connection on a specific port
+print(ser.name)
+ser.write(b'hello')
+
+counter = 32 # Below 32 everything in ASCII is gibberish
+
 
 cap = cv2.VideoCapture(0)
 kernel = np.ones((5,5),np.uint8)
@@ -25,7 +36,7 @@ while True:
     mask = mask1 + mask2
     mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel)
 
-    ret, thresh = cv2.threshold(mask, 127, 255, 0)
+    ret, thresh = cv2.threshold(mask, 240, 255, 0)
     contours, hierarchy = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
     # loop over the contours
 
@@ -40,7 +51,6 @@ while True:
         # draw the book contour (in green)
         cv2.rectangle(img, (x, y), (x + w, y + h), (0, 255, 0), 2)
         #Center:  cv2.rectangle(img,(325,225),(325,225),(0,0,255),2)
-
         # draw the contour and center of the shape on the image
         cv2.circle(img, (x+h//2, y+w//2), 7, (255, 255, 255), -1)
         cv2.putText(img, "center", (x+h//2-20, y+w//2 - 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
@@ -51,10 +61,15 @@ while True:
         error = y1/100*2
         if Cy>cy+error:
             print("left")
+            ser.write(b'1')
         elif Cy<cy-error:
             print("right")
+            ser.write(b'2')
         else:
             print("move")
+            ser.write(b'3')
+            if (y+w//2)>(2*y1//3) and (y+w//2)<(y1):
+                pick()
     #cv2.drawContours(img ,contours,-1,(0,0,255),3)
 
     cv2.imshow("output",img)
@@ -63,5 +78,7 @@ while True:
     #cv2.imshow("Contour",contours)
     if(cv2.waitKey(1) & 0xff==ord('q')):
         break
+
+ser.close()
 cv2.destroyAllWindows()
 cap.release()
